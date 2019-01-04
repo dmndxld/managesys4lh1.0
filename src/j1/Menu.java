@@ -8,8 +8,9 @@ public class Menu {
 			"6.返回上一菜单" };
 
 	public static void showMenu(String[] Menu) {
+		System.out.println("学校信息管理程序");
 		for (int i = 0; i < Menu.length; i++) {
-			System.out.println("学校信息管理程序");
+
 			System.out.println(Menu[i] + "\n");
 		}
 	}
@@ -20,7 +21,5 @@ public class Menu {
 		}
 
 	}
-
-	
 
 }

@@ -1,11 +1,15 @@
 package j1;
 
+import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Run {
-	static Scanner sc = new Scanner(System.in);
-	static Employee[] em = new Employee[10];
-	static Student[] stu = new Student[10];
+	private static Scanner sc = new Scanner(System.in);
+	private static List stuinformationList = Info.getList();
+	private static List eminformationList = Info.getList();
+	private static InfoService stuis = new InfoService();
+	private static InfoService emis = new InfoService();
 
 	public static void caozuo() {
 		Menu.showMenu(Menu.MENU);
@@ -63,123 +67,144 @@ public class Run {
 	public static void queryStudent() {
 		System.out.println("------查询学生信息------");
 		System.out.println("请输入你要查询的学生ID");
-		String s = sc.next();
-		for (int i = 0; i < 10; i++) {
-			if (stu[i] != null) {
-				if (stu[i].ID.equals(s)) {
-					System.out.println("你要查询的学生是：");
-					stu[i].display();
-				} else {
-					if (i != 9) {
-						continue;
-					} else {
-						System.out.println("你输入的学生不存在请重新输入");
-						caozuo2();
-					}
-				}
+		Student s;
+		boolean isok = false;
+		do {
+			String str = getValidString();
+			boolean strisok = stuis.CheckExitByID(str);
+			if (strisok == true) {
+				s = stuis.getStudentByID(str);
+				s.display();
+				isok = true;
+
+			} else {
+				System.out.println("查无此人请重新输入");
 			}
-		}
+		} while (!isok);
+		caozuo2();
 	}
 
 	public static void updateStudent() {
 		System.out.println("------修改学生------");
 		System.out.println("请输入你要修改的学生ID");
-		String s = sc.next();
-		for (int i = 0; i < 10; i++) {
-			if (stu[i] != null) {
-				if (stu[i].ID.equals(s)) {
-					System.out.println("你要修改的是：");
-					stu[i].display();
-					System.out.println("请重新输入相关信息：");
-					System.out.println("ID:");
-					String ID = sc.next();
-					System.out.println("姓名：");
-					String name = sc.next();
-					System.out.println("年龄：");
-					int age = sc.nextInt();
-					System.out.println("成绩：");
-					double grade = sc.nextDouble();
-					Student st = new Student(ID, name, age, grade);
-					stu[i] = st;
-					System.out.println("修改成功！");
-				} else {
-					if (i != 9) {
-						continue;
-					} else {
-						System.out.println("你输入的学生不存在请重新输入");
-						caozuo2();
-					}
-				}
+		boolean isok = false;
+		Student s;
+		do {
+			String str = getValidString();
+			isok = stuis.CheckExitByID(str);
+			if (isok == true) {
+				isok = true;
+				s = stuis.getStudentByID(str);
+				s.display();
+				System.out.println("请输入名字：");
+				String name = sc.next();
+				System.out.println("请输入年龄：");
+				int age = sc.nextInt();
+				System.out.println("请输入成绩：");
+				double grade = sc.nextDouble();
+				s.setName(name);
+				s.setAge(age);
+				s.setGrade(grade);
+				s.display();
+			} else {
+				System.out.println("查无此人请重新输入");
 			}
-		}
+		} while (!isok);
+		caozuo2();
 
 	}
 
 	public static void delStudent() {
 		System.out.println("------删除学生------");
-		System.out.println("请输入你要删除的学生ID");
-		String n = sc.next();
-		for (int i = 0; i < 10; i++) {
-			if (stu[i] != null) {
-				if (stu[i].ID.equals(n)) {
-					stu[i] = null;
-					System.out.println("删除成功！");
 
-				} else {
-					System.out.println("指令错误请重新输入");
-					delStudent();
-				}
+		String ID;
+		boolean isok = false;
+		System.out.println("请输入你要删除的学生ID");
+		do {
+			ID = getValidString();
+			isok = stuis.CheckExitByID(ID);
+			if (isok == true) {
+				System.out.println("ID查找成功");
+				stuinformationList.remove(stuis.getPersonByID(ID));
+
 			} else {
-				if (i != 9) {
-					continue;
-				} else {
-					System.out.println("输入学生不存在请重新输入");
-					delStudent();
-				}
+				System.out.println("输入信息有误，请重新输入");
 			}
-		}
+		} while (!isok);
+		System.out.println("删除成功");
+		caozuo2();
+
+	}
+
+	private static String getValidString() {
+		String ID = "0";
+		boolean isok = false;
+		do {
+			try {
+				ID = sc.next();
+				isok = true;
+			} catch (InputMismatchException e) {
+				System.out.println("输入错误，重新输入");
+				sc.hasNext();
+			}
+
+		} while (!isok);
+		return ID;
 
 	}
 
 	public static void listStudent() {
 		System.out.println("------所有学生信息------");
-		for (int i = 0; i < 10; i++) {
-			if (stu[i] != null) {
-				stu[i].display();
-			}
+		for (int i = 0; i < stuinformationList.size(); i++) {
+			Student s = (Student) stuinformationList.get(i);
+			System.out.println("ID" + "\t" + s.getID() + "\t" + "Name" + "\t" + s.getName() + "\t" + "age" + "\t"
+					+ s.getAge() + "\t" + "Grade" + "\t" + s.getGrade());
 		}
+		caozuo2();
 
 	}
 
 	public static void addStudent() {
 		System.out.println("------增加学生------");
-		int i=0;
-		while(true) {
-		System.out.println("点击任意键继续添加学生信息，停止添加输入0");
-			  if(sc.nextInt()==0)break;
-		System.out.println("ID:");
-		String ID = sc.next();
-		for(int a=0;a<i;a++) {
-			if(stu[i-1].ID.equals(ID)) {
-				System.out.println("输入ID重复请重新输入");
+
+		boolean isok = false;
+		String ID = null;
+		do {
+			System.out.println("请输入ID（且不能出现重复)");
+			ID = sc.next();
+			if (stuis.getStudentByID(ID) == null) {
+				isok = true;
+			} else {
+				System.out.println("该人信息已存在，请重新输入");
 				addStudent();
-			}else {
-				break;
 			}
-		}
+		} while (!isok);
+		System.out.println("请输入其他信息。。。");
 		System.out.println("姓名：");
-		String name = sc.next();
+		String name = getValidString();
 		System.out.println("年龄：");
-		int age = sc.nextInt();
+		int age = getValidAge();
 		System.out.println("成绩：");
 		double grade = sc.nextDouble();
-		Student s = new Student(ID, name, age, grade);
-		stu[i]=s;
-		i++;
-		System.out.println("添加成功");
-		}
+		stuis.saveStudent(new Student(ID, name, age, grade));
+		caozuo2();
+
 	}
 
+	private static int getValidAge() {
+		int num = 0;
+		boolean isok = false;
+		do {
+			num = sc.nextInt();
+			if (num <= 0 || num >= 130) {
+				System.out.println("输入有误请重新输入");
+			} else {
+				isok = true;
+			}
+
+		} while (!isok);
+		return num;
+	}
 
 	public static void caozuo3() {
 		Menu.showOPREATION_Menu(Menu.EMP_OPREATION_MENU);
@@ -215,122 +240,121 @@ public class Run {
 	public static void updateEmployee() {
 		System.out.println("------修改员工------");
 		System.out.println("请输入你要修改的员工ID");
-		String s = sc.next();
-		for (int i = 0; i < 10; i++) {
-			if (em[i] != null) {
-				if (em[i].ID.equals(s)) {
-					System.out.println("你要修改的是：");
-					em[i].display();
-					System.out.println("请重新输入相关信息：");
-					System.out.println("ID:");
-					String ID = sc.next();
-					System.out.println("姓名：");
-					String name = sc.next();
-					System.out.println("年龄：");
-					int age = sc.nextInt();
-					System.out.println("薪水：");
-					int salary = sc.nextInt();
-					System.out.println("工作：");
-					String work = sc.next();
-					Employee e = new Employee(ID, name, age,salary,work);
-					em[i] = e;
-					System.out.println("修改成功！");
-				} else {
-					if (i != 9) {
-						continue;
-					} else {
-						System.out.println("你输入的员工不存在请重新输入");
-						caozuo3();
-					}
-				}
+		boolean isok = false;
+		Employee e;
+		do {
+			String str = getValidString();
+			isok = emis.CheckExitByID(str);
+			if (isok == true) {
+				isok = true;
+				e = emis.getEmployeeByID(str);
+				e.display();
+				System.out.println("请输入名字：");
+				String name = sc.next();
+				System.out.println("请输入年龄：");
+				int age = sc.nextInt();
+				System.out.println("请输入薪水：");
+				int salary = sc.nextInt();
+				System.out.println("请输入薪水：");
+				String work=sc.next();
+				e.setName(name);
+				e.setAge(age);
+				e.setSalary(salary);
+				e.setWork(work);
+				e.display();
+			} else {
+				System.out.println("查无此人请重新输入");
 			}
-		}
+		} while (!isok);
+		caozuo3();
+
 	}
 
 	public static void delEmployee() {
 		System.out.println("------删除员工------");
+		
+		String ID;
+		boolean isok = false;
 		System.out.println("请输入你要删除的员工ID");
-		String n = sc.next();
-		for (int i = 0; i < 10; i++) {
-			if (em[i] != null) {
-				if (em[i].ID.equals(n)) {
-					em[i] = null;
-					System.out.println("删除成功！");
+		do {
+			ID = getValidString();
+			isok = emis.CheckExitByID(ID);
+			if (isok == true) {
+				System.out.println("ID查找成功");
+				eminformationList.remove(emis.getPersonByID(ID));
 
-				} else {
-					System.out.println("指令错误请重新输入");
-					delEmployee();
-				}
 			} else {
-				if (i != 9) {
-					continue;
-				} else {
-					System.out.println("输入员工不存在请重新输入");
-					delEmployee();
-				}
+				System.out.println("输入信息有误，请重新输入");
 			}
-		}
+		} while (!isok);
+		System.out.println("删除成功");
+		caozuo3();
+
+
 	}
 
 	public static void queryEmployee() {
 		System.out.println("------查询员工信息------");
 		System.out.println("请输入你要查询的员工ID");
-		String s = sc.next();
-		for (int i = 0; i < 10; i++) {
-			if (em[i] != null) {
-				if (em[i].ID.equals(s)) {
-					System.out.println("你要查询的员工是：");
-					em[i].display();
-				} else {
-					if (i != 9) {
-						continue;
-					} else {
-						System.out.println("你输入的员工不存在请重新输入");
-						caozuo3();
-					}
-				}
+		
+		Student e;
+		boolean isok = false;
+		do {
+			String str = getValidString();
+			boolean strisok = emis.CheckExitByID(str);
+			if (strisok == true) {
+				e = emis.getStudentByID(str);
+				e.display();
+				isok = true;
+
+			} else {
+				System.out.println("查无此人请重新输入");
 			}
-		}
+		} while (!isok);
+		caozuo3();
+
 	}
 
 	public static void addEmployee() {
 		System.out.println("------增加员工------");
-		int i=0;
-		while(true) {
-		System.out.println("点击任意键继续添加员工信息，停止添加输入0");
-			  if(sc.nextInt()==0)break;
-		System.out.println("ID:");
-		String ID = sc.next();
-		for(int a=0;a<i;a++) {
-			if(em[i-1].ID.equals(ID)) {
-				System.out.println("输入ID重复请重新输入");
+		boolean isok = false;
+		String ID = null;
+		do {
+			System.out.println("请输入ID（且不能出现重复)");
+			ID = sc.next();
+			if (emis.getEmployeeByID(ID) == null) {
+				isok = true;
+			} else {
+				System.out.println("该人信息已存在，请重新输入");
 				addEmployee();
-			}else {
-				break;
 			}
-		}
+		} while (!isok);
+		System.out.println("请输入其他信息。。。");
 		System.out.println("姓名：");
-		String name = sc.next();
+		String name = getValidString();
 		System.out.println("年龄：");
-		int age = sc.nextInt();
+		int age = getValidAge();
 		System.out.println("薪水：");
 		int salary = sc.nextInt();
-		System.out.println("工作：");
-		String work = sc.next();
-		Employee e = new Employee(ID, name, age, salary,work);
-		em[i]=e;
-		i++;
-		System.out.println("添加成功");
-		}
+		System.out.println("工作");
+		String work=getValidString();
+		emis.saveEmployee(new Employee(ID, name, age, salary,work));
+		caozuo3();
+
 	}
+
 	public static void listEmployee() {
 		System.out.println("------所有员工信息------");
-		for (int i = 0; i < 10; i++) {
-			if (em[i] != null) {
-				em[i].display();
-			}
+		for (int i = 0; i < eminformationList.size(); i++) {
+			Employee e = (Employee) eminformationList.get(i);
+			System.out.println("ID" + "\t" + e.getID() + "\t" + "Name" + "\t" + e.getName() + "\t" + "age" + "\t"
+					+ e.getAge() + "\t" + "salary" + "\t" + e.getSalary()+"\t"+"work"+"\t"+e.getWork());
 		}
+		caozuo3();
+
+
 	}
+
 	public static void main(String[] args) {
 		Run.caozuo();
 	}
