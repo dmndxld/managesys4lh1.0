@@ -1,5 +1,6 @@
 package j1;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -9,12 +10,11 @@ import java.util.Scanner;
 
 public class Run {
 	private Scanner sc = new Scanner(System.in);
-	public List stuinformationList = Info.getList();
-	public  List eminformationList = Info.getList();
-	public  InfoService stuis = new InfoService();
-	public  InfoService emis = new InfoService();
+	ArrayList<Student> students = new ArrayList<Student>();
+	ArrayList<Employee> employees = new ArrayList<Employee>();
 
-	public  void caozuo() {
+
+	public void caozuo() throws IOException {
 		Menu.showMenu(Menu.MENU);
 		System.out.println("请输入你要选择的操作");
 		Scanner sc = new Scanner(System.in);
@@ -37,43 +37,49 @@ public class Run {
 		}
 	}
 
-	public  void caozuo2() {
+	public void caozuo2() throws IOException {
 		Menu.showOPREATION_Menu(Menu.STU_OPREATION_MENU);
 		System.out.println("请输入你要选择的操作");
 		Scanner sc = new Scanner(System.in);
 		String s = sc.next();
-		StudentOperate so=new StudentOperate();
+		StudentOperate so = new StudentOperate();
 		switch (s) {
 		case "1":
-			
-			so.add();
+			so.add(students, "students.txt");
+			students.clear();
 			break;
 		case "2":
-			so.list();
+			so.list(students, "students.txt");
+			students.clear();
 			break;
 		case "3":
-			so.query();
+			so.query(students, "students.txt");
+			students.clear();
 			break;
 		case "4":
-			so.delete();
+			so.delete(students, "students.txt");
+			students.clear();
 			break;
 		case "5":
-			so.delete();
+			so.update(students, "students.txt");
+			students.clear();
 			break;
 		case "6":
 			caozuo();
+			students.clear();
+			sc.close();
 			break;
 		case "7":
-			so.findByLike();
+			so.findByLike(students, "students.txt");
+			students.clear();
 			break;
 		default:
 			System.out.println("指令错误请重新输入");
 			caozuo2();
+			students.clear();
 			break;
 		}
 	}
-
-
 
 	public String getValidString() {
 		String ID = "0";
@@ -92,7 +98,6 @@ public class Run {
 
 	}
 
-
 	public int getValidAge() {
 		int num = 0;
 		boolean isok = false;
@@ -108,44 +113,53 @@ public class Run {
 		return num;
 	}
 
-	public  void caozuo3() {
+	public void caozuo3() throws IOException {
 		Menu.showOPREATION_Menu(Menu.EMP_OPREATION_MENU);
 		System.out.println("请输入你要选择的操作");
 		Scanner sc = new Scanner(System.in);
 		String s = sc.next();
-		EmployeeOperate emo=new EmployeeOperate();
+		EmployeeOperate emo = new EmployeeOperate();
 		switch (s) {
 		case "1":
-			emo.add();
+			emo.add(employees,"employees.txt");
+	
+			employees.clear();
 			break;
 		case "2":
-			emo.list();
+			emo.list(employees,"employees.txt");
+			employees.clear();
 			break;
 		case "3":
-			emo.query();
+			emo.query(employees,"employees.txt");
+			employees.clear();
 			break;
 		case "4":
-			emo.delete();
+			emo.delete(employees,"employees.txt");
+			employees.clear();
 			break;
 		case "5":
-			emo.update();
+			emo.update(employees,"employees.txt");
+			employees.clear();
 			break;
 		case "6":
 			caozuo();
+			employees.clear();
+			sc.close();
 			break;
 		case "7":
-			emo.findByLike();
+			emo.findByLike(employees,"employees.txt");
+			employees.clear();
 			break;
 		default:
 			System.out.println("指令错误请重新输入");
+			employees.clear();
 			caozuo3();
 			break;
 		}
 	}
 
-
-	public static void main(String[] args) {
-		Run r=new Run();
+	public static void main(String[] args) throws IOException {
+		Run r = new Run();
 		r.caozuo();
 	}
 

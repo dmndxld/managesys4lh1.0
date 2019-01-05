@@ -1,139 +1,175 @@
 package j1;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
-public class EmployeeOperate implements PersonOperate {
+public class EmployeeOperate {
 	static Scanner sc = new Scanner(System.in);
-	Run r=new Run();
-	public void update() {
-		System.out.println("------修改员工------");
-		System.out.println("请输入你要修改的员工ID");
-		boolean isok = false;
-		Employee e;
-		do {
-			String str = r.getValidString();
-			isok = r.emis.CheckExitByID(str);
-			if (isok == true) {
-				isok = true;
-				e = r.emis.getEmployeeByID(str);
-				e.display();
-				System.out.println("请输入名字：");
-				String name = sc.next();
-				System.out.println("请输入年龄：");
-				int age = sc.nextInt();
-				System.out.println("请输入薪水：");
-				int salary = sc.nextInt();
-				System.out.println("请输入薪水：");
-				String work = sc.next();
-				e.setName(name);
-				e.setAge(age);
-				e.setSalary(salary);
-				e.setWork(work);
-				e.display();
-			} else {
-				System.out.println("查无此人请重新输入");
-			}
-		} while (!isok);
-		r.caozuo3();
+	Run r = new Run();
 
-	}
-
-	public  void delete() {
-		System.out.println("------删除员工------");
-
-		String ID;
-		boolean isok = false;
-		System.out.println("请输入你要删除的员工ID");
-		do {
-			ID = r.getValidString();
-			isok = r.emis.CheckExitByID(ID);
-			if (isok == true) {
-				System.out.println("ID查找成功");
-				r.eminformationList.remove(r.emis.getPersonByID(ID));
-
-			} else {
-				System.out.println("输入信息有误，请重新输入");
-			}
-		} while (!isok);
-		System.out.println("删除成功");
-		r.caozuo3();
-
-	}
-
-	public  void query() {
+	public void query(ArrayList<Employee> employees, String filename) throws IOException {
 		System.out.println("------查询员工信息------");
+		EmFileOperate.Reader(employees, "employees.txt");
 		System.out.println("请输入你要查询的员工ID");
-
-		Student e;
-		boolean isok = false;
-		do {
-			String str = r.getValidString();
-			boolean strisok = r.emis.CheckExitByID(str);
-			if (strisok == true) {
-				e = r.emis.getStudentByID(str);
-				e.display();
-				isok = true;
-
-			} else {
-				System.out.println("查无此人请重新输入");
+		String ID = sc.next();
+		boolean a = false;
+		for (int i = 0; i < employees.size(); i++) {
+			Employee e = (Employee) employees.get(i);
+			if (e.getID().equals(ID)) {
+				System.out.println("员工号：" + e.getID() + "  年龄：" + e.getAge() + "  姓名：" + e.getName() + "  工作：" + e.getWork()+"   薪水："+e.getSalary());
+				a = true;
 			}
-		} while (!isok);
+		}
+		if (!a) {
+			System.out.println("查无此人");
+		}
 		r.caozuo3();
-
 	}
 
-
-
-	public void add() {
-		System.out.println("------增加员工------");
-		boolean isok = false;
-		String ID = null;
-		do {
-			System.out.println("请输入ID（且不能出现重复)");
-			ID = sc.next();
-			if (r.emis.getEmployeeByID(ID) == null) {
-				isok = true;
-			} else {
-				System.out.println("该人信息已存在，请重新输入");
-				add();
+	public void update(ArrayList<Employee> employees, String filename) throws IOException {
+		String newName, newID, newWork;
+		int newAge,newSalary;
+		
+		EmFileOperate.Reader(employees, "employees.txt");
+		System.out.println("输入你要修改的员工号：");
+		Scanner sc = new Scanner(System.in);
+		int index = -1;
+		String upId = sc.nextLine();
+		for (int i = 0; i < employees.size(); i++) {
+			Employee e = employees.get(i);
+			if (upId.equals(e.getID())) {
+				index = i;
+				break;
 			}
-		} while (!isok);
-		System.out.println("请输入其他信息。。。");
-		System.out.println("姓名：");
-		String name = r.getValidString();
-		System.out.println("年龄：");
-		int age = r.getValidAge();
-		System.out.println("薪水：");
-		int salary = sc.nextInt();
-		System.out.println("工作");
-		String work = r.getValidString();
-		r.emis.saveEmployee(new Employee(ID, name, age, salary, work));
-		r.caozuo3();
+		}
+		if (index == -1)
+			System.out.println("对不起，你所修改的员工信息不存在");
+		else {
+			System.out.println("请输入新的员工名字：");
+			newName = sc.nextLine();
+			System.out.println("请输入新的员工年龄：");
+			newAge = sc.nextInt();
+			System.out.println("请输入新的员工号：");
+			newID = sc.nextLine();
+			System.out.println("请输入新的员工工作：");
+			newWork = sc.next();
+			System.out.println("请输入新的员工薪水：");
+			newSalary=sc.nextInt();
 
-	}
-
-	public void list() {
-		System.out.println("------所有员工信息------");
-		for (int i = 0; i < r.eminformationList.size(); i++) {
-			Employee e = (Employee) r.eminformationList.get(i);
-			System.out.println("ID" + "\t" + e.getID() + "\t" + "Name" + "\t" + e.getName() + "\t" + "age" + "\t"
-					+ e.getAge() + "\t" + "salary" + "\t" + e.getSalary() + "\t" + "work" + "\t" + e.getWork());
+			Employee e = new Employee();
+			e.setName(newName);
+			e.setAge(newAge);
+			e.setID(newID);
+			e.setWork(newWork);
+			e.setSalary(newSalary);
+			employees.set(index, e);
+			System.out.println("恭喜你，修改成功");
+			EmFileOperate.Writer(employees, "employees.txt");
 		}
 		r.caozuo3();
 
 	}
-	public void findByLike() {
+
+	public void delete(ArrayList<Employee> employees, String filename) throws IOException {
+		EmFileOperate.Reader(employees, "employees.txt");
+		Scanner sc = new Scanner(System.in);
+		System.out.println("请输入你要删除的员工的ID：");
+		String deleteId = sc.nextLine();
+		// boolean flag=false;
+		int index = -1;
+		for (int i = 0; i < employees.size(); i++) {
+			Employee e= employees.get(i);
+			if (e.getID().equals(deleteId)) {
+				index = i;
+				// flag=true;
+				break;
+			}
+		}
+
+		if (index != -1) {
+			employees.remove(index);
+			EmFileOperate.Writer(employees, "employees.txt");
+			System.out.println("删除成功");
+		} else
+			System.out.println("没有你想要删除的员工，请重新输入：");
+
+		r.caozuo3();
+
+	}
+
+	public void list(ArrayList<Employee> employees, String filename) throws IOException {
+		EmFileOperate.Reader(employees, "employees.txt");
+		if (employees.size() == 0)
+			System.out.println("对不起，没有员工信息");
+		else {
+			for (int i = 0; i < employees.size(); i++) {
+
+				Employee e = employees.get(i);
+				System.out.println(
+						"ID：" + e.getID() + "  年龄：" + e.getAge() + "  姓名：" + e.getName() + "  工作：" + e.getWork()+"   薪水："+e.getSalary());
+			}
+		}
+		r.caozuo3();
+
+	}
+
+	public void add(ArrayList<Employee> employees, String filename) throws IOException {
+		EmFileOperate.Reader(employees, "employees.txt");
+		Scanner sc = new Scanner(System.in);
+		String id;
+		while (true) {
+			System.out.println("请输入员工的ID：");
+			id = sc.nextLine();
+			boolean flag = true;
+			for (int i = 0; i < employees.size(); i++) {
+				Employee e = employees.get(i);
+				if (id.equals(e.getID())) {
+					flag = false;
+					break;
+				}
+			}
+			if (flag)
+				break;
+			else
+				System.out.println("对不起，你输入的ID有误，请重新输入");
+		}
+		System.out.println("请输入员工的姓名：");
+		String name = sc.nextLine();
+		System.out.println("请输入员工的年龄：");
+		int age = sc.nextInt();
+		System.out.println("请输入员工的工作：");
+		String work=sc.next();
+		System.out.println("请输入员工的薪水：");
+		int Salary=sc.nextInt();
+		Employee e=new Employee();
+		e.setName(name);
+		e.setAge(age);
+		e.setID(id);
+		e.setWork(work);
+		e.setSalary(Salary);
+		employees.add(e);
+		EmFileOperate.Writer(employees, "employees.txt");
+
+		System.out.println("添加员工成功");
+
+		r.caozuo3();
+
+	}
+
+	public void findByLike(ArrayList<Employee> employees, String filename) throws IOException {
+		EmFileOperate.Reader(employees, "employees.txt");
 		System.out.println("你所要查询的名字：");
-		String name=sc.next();
-		boolean a=false;
-		for (int i = 0; i < r.eminformationList.size(); i++) {
-			Employee e =  (Employee) r.eminformationList.get(i);
-			if(e.getName().contains(name)) {
-				System.out.println("名字为："+e.getName());
-				a=true;
+		String name = sc.next();
+		boolean a = false;
+		for (int i = 0; i < employees.size(); i++) {
+			Employee e = (Employee) employees.get(i);
+			if (e.getName().contains(name)) {
+				System.out.println("名字为：" + e.getName());
+				a = true;
 			}
 		}
-		if(!a) {
+		if (!a) {
 			System.out.println("查无此人");
 		}
 		r.caozuo3();

@@ -12,6 +12,10 @@ public class Employee extends Person {
 		this.work = work;
 	}
 
+	public Employee() {
+		
+	}
+
 	public void display() {
 		System.out.println("姓名：" + getName() + " 年龄" + getAge() + " 薪水" + salary + " 工作" + work);
 
